@@ -1,0 +1,11 @@
+{
+    "database": {
+      "host": "your_database_host",
+      "port": 5432,
+      "user": "your_database_user",
+      "password": "your_database_password",
+      "dbname": "your_database_name",
+      "sslmode": "disable"
+    }
+  }
+  
