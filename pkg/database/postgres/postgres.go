@@ -9,6 +9,10 @@ import (
 
 var DB *sql.DB
 
+func GetDB() *sql.DB {
+	return DB
+}
+
 func DBInit() {
 	var err error
 	DB, err = sql.Open("postgres", "postgres://postgres:lol@localhost/godb?sslmode=disable")

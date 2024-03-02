@@ -1,25 +1,62 @@
 package task
 
 import (
-	"tsis2/pkg/database/postgres"
+	// "fmt"
+	"log"
+	"github.com/ArmanAmandykuly/gomidterm/pkg/database/postgres"
 )
 
-func DBGetAllTasks() ([]Task, error) {
-	rows, err := DB.Query("SELECT * FROM tasks")
+func GetTasks() ([]Task, error) {
+	rows, err := postgres.DB.Query("SELECT * FROM tasks")
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
 	var tasks []Task
 	for rows.Next() {
-		var task Task
-		err := rows.Scan(&task.ID, &task.Title, &task.Content)
+		var t Task
+		err := rows.Scan(&t.ID, &t.Title, &t.Content)
 		if err != nil {
-			return nil, err
+			log.Fatal(err)
 		}
-		tasks = append(tasks, task)
+		tasks = append(tasks, t)
 	}
 
 	return tasks, nil
+}
+
+func GetTaskById(id int) (Task, error) {
+	query := "SELECT * FROM tasks WHERE id = $1"
+    rows, err := postgres.DB.Query(query, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer rows.Close()
+
+	if rows.Next() {
+        var t Task
+        if err := rows.Scan(&t.ID, &t.Title, &t.Content); err != nil {
+            log.Println("Error scanning row:", err)
+            return Task{}, err
+        }
+        return t, nil
+    }
+
+	var t Task
+
+	return t, nil
+}
+
+func SaveTask(task Task) (Task, error) {
+	query := "INSERT INTO tasks VALUES($1, $2, $3)"
+	_, err := postgres.DB.Query(query, task.ID, task.Title, task.Content)
+
+	if(err != nil) {
+		log.Fatal("Error happened while trying to post the task")
+		return task, err
+	}
+
+	return task, nil
 }
